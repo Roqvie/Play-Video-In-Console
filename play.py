@@ -4,7 +4,7 @@ import transformer
 
 @click.command()
 @click.argument('path', type=click.Path(exists=True))
-@click.option('--symbols', default='.~=*&%@#')
+@click.option('--symbols', type=str, default='.-"~:;/+*ox8#%@¶')
 @click.option('--shape', nargs=2, type=int)
 @click.option('--image-type', type=click.Choice(['grayscale', 'treshold'], case_sensitive=False))
 @click.option('--treshold', default=None, type=click.IntRange(0, 255))
