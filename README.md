@@ -2,6 +2,7 @@
 
 Script for playing videofiles in console
 ![Example](https://github.com/Roqvie/PlayVideoInConsole/blob/main/examples/image.png?raw=true)
+![Example](https://github.com/Roqvie/PlayVideoInConsole/blob/main/examples/image_2.png?raw=true)
 ## Install
 ```sh
 git clone https://github.com/Roqvie/PlayVideoInConsole.git
