@@ -10,6 +10,7 @@ cd PlayVideoInConsole
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
+sudo apt-get install ffmpeg -y
 ```
 ## Usage
 

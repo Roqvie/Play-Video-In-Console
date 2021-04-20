@@ -3,6 +3,7 @@ import cv2
 import click
 import time
 import sys
+import os
 
 
 def get_ascii_from_frame(image, ascii_symbols):
@@ -17,27 +18,36 @@ def get_ascii_from_frame(image, ascii_symbols):
 def print_frames(buff, fps, offset=0.0005):
     """Get generated frame from buffer every frame time"""
 
-    _frame = True
-    while _frame:
+    frame = True
+    while frame:
+        start_time = time.time()
         time.sleep(1. / fps - offset)
+        frame = buff.get()
         click.clear()
-        _frame = buff.get()
-        print(_frame)
+        print(f"{frame}\n")
+
+        # Print frame statistics
+        frame_time = time.time() - start_time
+        print("\nFrame time:      {:.6f}".format(frame_time))
 
 
-def play(video, symbols, wh, image_type, treshold):
+def play_video(video, symbols, wh, image_type, treshold):
 
     # Read video data and create buffer-queue for pre-generated frames
     video = cv2.VideoCapture(video)
     fps = video.get(cv2.CAP_PROP_FPS)
+    w, _ = wh
     frames_buffer = Queue(maxsize=int(fps*5))
-    renderer = Process(target=print_frames, args=(frames_buffer, fps))
+    renderer = Process(target=print_frames, args=(frames_buffer, fps,))
     renderer.start()
 
 
     while video.isOpened():
         # Image transforming and processing
         ret, frame = video.read()
+        if frame is None:
+            frames_buffer.put(None)
+            sys.exit()
         frame = cv2.resize(frame, wh, interpolation=cv2.INTER_AREA)
         if image_type == 'grayscale':
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -48,8 +58,19 @@ def play(video, symbols, wh, image_type, treshold):
         # Put generated frame to buffer
         frames_buffer.put(ascii_frame)
 
+
     renderer.join()
     input('Press any key for EXIT\n')
     sys.exit()
 
 
+def play_sound(path):
+    """Play audio with ffmpeg"""
+
+    options = [
+        '-vn',
+        '-nodisp',
+        '-nostats',
+        '-autoexit',
+    ]
+    os.system(f'ffplay {" ".join(options)} {path[:-4]}.mp3')
